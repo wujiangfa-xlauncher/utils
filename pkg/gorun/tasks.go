@@ -39,12 +39,11 @@ func NewBatchContext(ctx context.Context) BatchContext {
 func Tasks(acts ...BatchTaskAction) BatchWait {
 	return &BatchTasks{
 		wg: &sync.WaitGroup{},
-		//doneSignal: make(chan bool, 1),
 		actions: acts,
 	}
 }
 
-//BatchTasks 对ConcurrentTasks接口进行扩展
+//BatchTasks BatchWait实现类
 type BatchTasks struct {
 	wg      *sync.WaitGroup
 	actions []BatchTaskAction
