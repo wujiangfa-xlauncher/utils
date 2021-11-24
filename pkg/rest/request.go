@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"k8s.io/apimachinery/pkg/conversion/queryparams"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -29,10 +30,13 @@ func (r *Request) Verb(verb string) *Request {
 	return r
 }
 
-// AbsPath overwrites an existing path with the segments provided. Trailing slashes are preserved
-// when a single segment is passed.
-func (r *Request) AbsPath(segments ...string) *Request {
-	r.decorator.AbsPath(segments...)
+func (r *Request) AbsPath(path string) *Request {
+	r.decorator.AbsPath([]string{path}...)
+	return r
+}
+
+func (r *Request) AbsPathf(format string, a ...interface{}) *Request {
+	r.AbsPath(fmt.Sprintf(format, a...))
 	return r
 }
 

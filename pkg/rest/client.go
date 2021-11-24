@@ -27,8 +27,11 @@ func NewRESTClientEasy(baseURL string, customize *http.Client) (*RESTClient, err
 }
 
 func NewRESTClientWithLogTrace(baseURL *url.URL, rateLimiter flowcontrol.RateLimiter, client *http.Client) *RESTClient {
-	if client != nil && client.Transport != nil {
-		client.Transport = &debugTransport{delegatedRoundTripper: transport.DebugWrappers(client.Transport)}
+	if client != nil {
+		if client.Transport == nil {
+			client.Transport = &http.Transport{}
+		}
+		client.Transport = transport.DebugWrappers(client.Transport)
 	}
 	return NewRESTClient(baseURL, rateLimiter, client)
 }
@@ -43,6 +46,10 @@ func NewRESTClient(baseURL *url.URL, rateLimiter flowcontrol.RateLimiter, client
 	return &RESTClient{
 		decorator: restClient,
 	}
+}
+
+func (c *RESTClient) GetK8sRESTClient() *rest.RESTClient {
+	return c.decorator
 }
 
 // GetRateLimiter returns rate limiter for a given client, or nil if it's called on a nil client
