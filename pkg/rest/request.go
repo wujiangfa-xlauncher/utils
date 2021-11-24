@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -81,13 +80,6 @@ func (r *Request) Timeout(d time.Duration) *Request {
 	return r
 }
 
-//MaxRetries 表示重试次数，
-//注意: 重试机制只支持get请求，connection reset by peer错误和EOF错误
-func (r *Request) MaxRetries(maxRetries int) *Request {
-	r.decorator.MaxRetries(maxRetries)
-	return r
-}
-
 func (r *Request) SetHeader(key string, values ...string) *Request {
 	r.decorator.SetHeader(key, values...)
 	return r
@@ -118,15 +110,15 @@ func (r *Request) URL() *url.URL {
 }
 
 // DoRaw executes the request but does not process the response body.
-func (r *Request) DoRaw(ctx context.Context) ([]byte, error) {
+func (r *Request) DoRaw() ([]byte, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
-	return r.decorator.DoRaw(ctx)
+	return r.decorator.DoRaw()
 }
 
-func (r *Request) DoInto(ctx context.Context, into interface{}) error {
-	resp, err := r.DoRaw(ctx)
+func (r *Request) DoInto(into interface{}) error {
+	resp, err := r.DoRaw()
 	if err != nil {
 		return err
 	}
