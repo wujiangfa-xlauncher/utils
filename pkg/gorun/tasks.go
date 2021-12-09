@@ -38,13 +38,14 @@ func NewBatchContext(ctx context.Context) BatchContext {
 
 func Tasks(acts ...BatchTaskAction) BatchWait {
 	return &BatchTasks{
-		wg: &sync.WaitGroup{},
+		wg:      &sync.WaitGroup{},
 		actions: acts,
 	}
 }
 
 //BatchTasks BatchWait实现类
 type BatchTasks struct {
+	panicI  interface{}
 	wg      *sync.WaitGroup
 	actions []BatchTaskAction
 	BatchContext
@@ -54,6 +55,9 @@ type BatchTasks struct {
 func (b *BatchTasks) Await(ctx context.Context) (BatchRes, error) {
 	b.Exec(ctx)
 	b.wg.Wait()
+	if b.panicI != nil {
+		panic(b.panicI)
+	}
 	return b.BatchContext, b.GetMergedError()
 }
 
@@ -73,8 +77,13 @@ func (b *BatchTasks) Exec(ctx context.Context) {
 	if len(b.actions) > 0 {
 		b.BatchContext = NewBatchContext(ctx)
 		actionSignalFunc := func(ctx BatchContext, act BatchTaskAction, actionOverSignal chan bool) {
+			defer func() {
+				if panicI := recover(); panicI != nil {
+					b.panicI = panicI
+				}
+				close(actionOverSignal)
+			}()
 			act(ctx)
-			close(actionOverSignal)
 		}
 
 		for _, v := range b.actions {

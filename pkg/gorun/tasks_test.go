@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/wujiangfa-xlauncher/utils/pkg/rest"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"net/http"
 	"testing"
 	"time"
@@ -92,7 +92,7 @@ func TestRequest(t *testing.T) {
 	client, _ := rest.NewRESTClientEasy("http://127.0.0.1", nil)
 
 	_, err := Tasks(func(ctx BatchContext) {
-		_, err := client.Get().AbsPath("/hello").DoRaw(ctx)
+		_, err := client.Get().AbsPath("/hello").DoRaw()
 		ctx.AddError(err)
 	}, func(ctx BatchContext) {
 		time.Sleep(2 * time.Second)
@@ -119,4 +119,22 @@ func hello(w http.ResponseWriter, req *http.Request) {
 func setupHttp() {
 	http.HandleFunc("/hello", hello)
 	http.ListenAndServe(":80", nil)
+}
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		if panicI := recover(); panicI == nil {
+			t.Fatalf("recover failed")
+		} else {
+			if "woxiaole" != panicI {
+				t.Fatalf("unexpected panicI: %v", panicI)
+			}
+		}
+	}()
+	_, _ = Tasks(func(ctx BatchContext) {
+		panic("woxiaole")
+	}, func(ctx BatchContext) {
+		time.Sleep(time.Second)
+	}).Await(context.TODO())
+
 }
