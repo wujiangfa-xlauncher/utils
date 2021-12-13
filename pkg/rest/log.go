@@ -59,7 +59,7 @@ func (l *logTrace) RoundTrip(request *http.Request) (*http.Response, error) {
 		)
 
 		if request.Header != nil {
-			if klog.V(9).Enabled() {
+			if klog.V(7).Enabled() {
 				log = fmt.Sprintf("%sRequest Header: %v\n", log, request.Header)
 			}
 		}
@@ -72,13 +72,13 @@ func (l *logTrace) RoundTrip(request *http.Request) (*http.Response, error) {
 
 		resHeader := response.Header
 		if resHeader != nil {
-			if klog.V(10).Enabled() {
+			if klog.V(7).Enabled() {
 				log = fmt.Sprintf("%sResponse Header: %v\n", log, resHeader)
 			}
 		}
 
 		if responseBodyStr != "" {
-			if klog.V(8).Enabled() {
+			if klog.V(7).Enabled() {
 				log = fmt.Sprintf("%sResponse Body: %s\n", log, responseBodyStr)
 			}
 		}
