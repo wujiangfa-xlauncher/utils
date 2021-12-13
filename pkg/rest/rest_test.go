@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -52,7 +53,7 @@ func TestGet(t *testing.T) {
 		AbsPath("/a/g/f/g").
 		Param("key1", "value").
 		SetHeader("token", "abcdefg").
-		DoRaw()
+		DoRaw(context.TODO())
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -68,7 +69,7 @@ func TestPost(t *testing.T) {
 		Body(map[string]interface{}{
 			"a": "b",
 			"s": "f",
-		}).DoInto(resp)
+		}).DoInto(context.TODO(),resp)
 	if err != nil {
 		t.Fatal(err)
 	}

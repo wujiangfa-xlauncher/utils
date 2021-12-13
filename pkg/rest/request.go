@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -110,15 +111,15 @@ func (r *Request) URL() *url.URL {
 }
 
 // DoRaw executes the request but does not process the response body.
-func (r *Request) DoRaw() ([]byte, error) {
+func (r *Request) DoRaw(ctx context.Context) ([]byte, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
-	return r.decorator.DoRaw()
+	return r.decorator.DoRaw(ctx)
 }
 
-func (r *Request) DoInto(into interface{}) error {
-	resp, err := r.DoRaw()
+func (r *Request) DoInto(ctx context.Context,into interface{}) error {
+	resp, err := r.DoRaw(ctx)
 	if err != nil {
 		return err
 	}
