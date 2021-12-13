@@ -59,31 +59,31 @@ func (l *logTrace) RoundTrip(request *http.Request) (*http.Response, error) {
 		)
 
 		if request.Header != nil {
-			if klog.V(0).Enabled() {
+			if klog.V(9).Enabled() {
 				log = fmt.Sprintf("%sRequest Header: %v\n", log, request.Header)
 			}
 		}
 
 		if requestBodyStr != "" {
-			if klog.V(0).Enabled() {
+			if klog.V(7).Enabled() {
 				log = fmt.Sprintf("%sRequest Body: %s\n", log, requestBodyStr)
 			}
 		}
 
 		resHeader := response.Header
 		if resHeader != nil {
-			if klog.V(0).Enabled() {
+			if klog.V(10).Enabled() {
 				log = fmt.Sprintf("%sResponse Header: %v\n", log, resHeader)
 			}
 		}
 
 		if responseBodyStr != "" {
-			if klog.V(0).Enabled() {
+			if klog.V(8).Enabled() {
 				log = fmt.Sprintf("%sResponse Body: %s\n", log, responseBodyStr)
 			}
 		}
 
-		if klog.V(0).Enabled() {
+		if klog.V(6).Enabled() {
 			fmt.Print(log)
 		}
 	}
