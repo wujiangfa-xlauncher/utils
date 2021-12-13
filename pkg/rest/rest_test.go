@@ -20,7 +20,7 @@ const (
 )
 
 func init() {
-	c, err := NewRESTClientEasy(baseURL, fake.CreateHTTPClient(func(request *http.Request) (response *http.Response, e error) {
+	c, err := NewRESTClientEasy("om", baseURL, fake.CreateHTTPClient(func(request *http.Request) (response *http.Response, e error) {
 		switch path, method := request.URL.Path, request.Method; {
 		case path == "/a/g/f/g" && method == "GET":
 			return &http.Response{StatusCode: http.StatusOK, Header: DefaultHeader(), Body: StringBody(getRes)}, nil
@@ -69,7 +69,7 @@ func TestPost(t *testing.T) {
 		Body(map[string]interface{}{
 			"a": "b",
 			"s": "f",
-		}).DoInto(context.TODO(),resp)
+		}).DoInto(context.TODO(), resp)
 	if err != nil {
 		t.Fatal(err)
 	}

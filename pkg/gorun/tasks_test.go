@@ -89,10 +89,10 @@ func TestRequest(t *testing.T) {
 	go func() {
 		setupHttp()
 	}()
-	client, _ := rest.NewRESTClientEasy("http://127.0.0.1", nil)
+	client, _ := rest.NewRESTClientEasy("test", "http://127.0.0.1", nil)
 
 	_, err := Tasks(func(ctx BatchContext) {
-		_, err := client.Get().AbsPath("/hello").DoRaw()
+		_, err := client.Get().AbsPath("/hello").DoRaw(ctx)
 		ctx.AddError(err)
 	}, func(ctx BatchContext) {
 		time.Sleep(2 * time.Second)

@@ -5,7 +5,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/transport"
 	"k8s.io/client-go/util/flowcontrol"
 	"net/http"
 	"net/url"
@@ -15,7 +14,7 @@ type RESTClient struct {
 	decorator *rest.RESTClient
 }
 
-func NewRESTClientEasy(baseURL string, customize *http.Client) (*RESTClient, error) {
+func NewRESTClientEasy(clientName, baseURL string, customize *http.Client) (*RESTClient, error) {
 	parsedUrl, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
@@ -23,15 +22,19 @@ func NewRESTClientEasy(baseURL string, customize *http.Client) (*RESTClient, err
 	if customize == nil {
 		customize = http.DefaultClient
 	}
-	return NewRESTClientWithLogTrace(parsedUrl, nil, customize), nil
+	return NewRESTClientWithLogTrace(clientName, parsedUrl, nil, customize), nil
 }
 
-func NewRESTClientWithLogTrace(baseURL *url.URL, rateLimiter flowcontrol.RateLimiter, client *http.Client) *RESTClient {
+func NewRESTClientWithLogTrace(clientName string, baseURL *url.URL, rateLimiter flowcontrol.RateLimiter, client *http.Client) *RESTClient {
 	if client != nil {
 		if client.Transport == nil {
 			client.Transport = &http.Transport{}
 		}
-		client.Transport = transport.DebugWrappers(client.Transport)
+		//client.Transport = transport.DebugWrappers(client.Transport)
+		client.Transport = &logTrace{
+			title:                 clientName,
+			delegatedRoundTripper: client.Transport,
+		}
 	}
 	return NewRESTClient(baseURL, rateLimiter, client)
 }
