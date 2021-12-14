@@ -19,21 +19,17 @@ func NewRESTClientEasy(clientName, baseURL string, customize *http.Client) (*RES
 	if err != nil {
 		return nil, err
 	}
-	if customize == nil {
-		customize = http.DefaultClient
-	}
 	return NewRESTClientWithLogTrace(clientName, parsedUrl, nil, customize), nil
 }
 
 func NewRESTClientWithLogTrace(clientName string, baseURL *url.URL, rateLimiter flowcontrol.RateLimiter, client *http.Client) *RESTClient {
 	if client != nil {
 		if client.Transport == nil {
-			client.Transport = &http.Transport{}
-		}
-		//client.Transport = transport.DebugWrappers(client.Transport)
-		client.Transport = &logTrace{
-			title:                 clientName,
-			delegatedRoundTripper: client.Transport,
+			//client.Transport = transport.DebugWrappers(&http.Transport{})
+			client.Transport = &logTrace{
+				title:                 clientName,
+				delegatedRoundTripper: &http.Transport{},
+			}
 		}
 	}
 	return NewRESTClient(baseURL, rateLimiter, client)

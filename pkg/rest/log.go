@@ -30,9 +30,9 @@ func (l *logTrace) RoundTrip(request *http.Request) (*http.Response, error) {
 	if request.Body != nil {
 		requestBody, _ = ioutil.ReadAll(request.Body)
 		requestBodyStr = string(requestBody)
+		request.Body = ioutil.NopCloser(bytes.NewReader(requestBody))
 	}
 
-	request.Body = ioutil.NopCloser(bytes.NewReader(requestBody))
 	response, err := l.delegatedRoundTripper.RoundTrip(request)
 
 	if response != nil {
