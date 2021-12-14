@@ -19,6 +19,9 @@ func NewRESTClientEasy(clientName, baseURL string, customize *http.Client) (*RES
 	if err != nil {
 		return nil, err
 	}
+	if customize == nil {
+		customize = &http.Client{}
+	}
 	return NewRESTClientWithLogTrace(clientName, parsedUrl, nil, customize), nil
 }
 
